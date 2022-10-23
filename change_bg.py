@@ -1,9 +1,10 @@
 from rembg import remove
 from PIL import Image
-import sys
 from pathlib import Path
+import os
 import glob
 import argparse
+import ntpath
 
 
 def dir_change_bg(dir_path, to_path, bg="#fff"):
@@ -40,9 +41,17 @@ def img_change_bg(img_path, to_path, bg="#fff"):
     print("background color is removing...")
     input_image = Image.open(img_path)
     output = remove(input_image)
-    output.save(to_path)
-
-    foreground = Image.open(to_path).convert("RGBA")
+    image_name = ntpath.basename(input_image.filename)
+    ext = os.path.splitext(to_path)
+    if ext[1] == '':
+        if Path(to_path).is_dir():
+            to_path = Path("/".join([to_path, image_name]))
+        else:
+            Path(to_path).mkdir(parents=True, exist_ok=True)
+            to_path = Path("/".join([to_path, image_name]))
+    else:
+        Path(ntpath.dirname(ext[0])).mkdir(parents=True, exist_ok=True)
+    foreground = output.convert("RGBA")
 
     if Path(bg).is_file():
         background = Image.open(bg).resize(foreground.size).convert("RGBA")
