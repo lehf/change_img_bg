@@ -16,15 +16,14 @@ def dir_change_bg(dir_path, to_path, bg="#fff"):
     for file in files:
         num += 1
         progress_rate = str(num) + "/" + str(file_num)+"  "
-        input_path = Path("/".join([dir_path, file.name]))
-        output_path = Path("/".join([to_path, file.name.split(".")[0]+".png"]))
+        input_path = file.resolve()
+        output_path = Path("/".join([to_path, file.name]))
 
         print(progress_rate + file.name + " background color is removing...")
         input_image = Image.open(input_path)
         output = remove(input_image)
-        output.save(output_path)
 
-        foreground = Image.open(output_path).convert("RGBA")
+        foreground = output.convert("RGBA")
         if Path(bg).is_file():
             background = Image.open(bg).resize(foreground.size).convert("RGBA")
         else:
@@ -57,12 +56,10 @@ def img_change_bg(img_path, to_path, bg="#fff"):
 
 
 if __name__ == "__main__":
-    # change_bg(sys.argv[1], sys.argv[2], sys.argv[3])
     parser = argparse.ArgumentParser()
     parser.add_argument("-b", help="New bg-color; default: #fff;  OR new bg-img path")
     parser.add_argument("-i", help="Folder or image path to input")
     parser.add_argument("-o", help="Folder or image path to output")
-    # parser.add_argument("-img", help="New bg-img path;")
     args = parser.parse_args()
     if args.i:
         if args.o:
